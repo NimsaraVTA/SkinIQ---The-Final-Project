@@ -1,0 +1,31 @@
+.card {
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.card-padding-sm {
+  padding: 8px;
+}
+
+.card-padding-md {
+  padding: 16px;
+}
+
+.card-padding-lg {
+  padding: 24px;
+}
+
+.card-shadow {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.card-shadow:hover {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.card-rounded {
+  border-radius: 12px;
+}
