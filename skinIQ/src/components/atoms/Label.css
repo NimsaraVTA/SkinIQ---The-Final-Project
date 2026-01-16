@@ -1,0 +1,13 @@
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #343a40; 
+  margin-bottom: 4px;
+  display: inline-block;
+}
+
+.label-required {
+  color: #e03131; 
+  margin-left: 2px;
+  font-weight: bold;
+}
