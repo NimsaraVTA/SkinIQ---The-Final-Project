@@ -11,7 +11,7 @@ const Button = ({
 }) => {
   return (
     <button
-      className={`btn btn-${variant} btn-${size} ${className}`}
+      className={`sk-btn sk-btn-${variant} sk-btn-${size} ${className}`}
       disabled={disabled}
       onClick={onClick}
       type={type}
