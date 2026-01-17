@@ -1,6 +1,8 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Button from "../../atoms/Button/Button";
 import Card from "../../atoms/Card/Card";
+import "./Welcome.css"; // Ensure your CSS is imported
 import {
   Camera, UserCircle, FileText, Sparkles,
   ShieldCheck, MessageSquare, Bell,
@@ -19,7 +21,8 @@ const features = [
 
 const Welcome = () => {
   return (
-    <div>
+    <div className="welcome-page-container">
+      
       <nav className="navbar navbar-expand-lg fixed-top bg-light border-bottom shadow-sm">
         <div className="container">
           <span className="navbar-brand fw-bold text-primary fs-4">SkinIQ</span>
@@ -41,8 +44,12 @@ const Welcome = () => {
             </ul>
 
             <div className="d-flex gap-2 align-items-center">
-              <Button variant="outline" size="sm">Sign In</Button>
-              <Button variant="primary" size="sm">Sign Up</Button>
+              <Link to="/auth?mode=signin" style={{ textDecoration: 'none' }}>
+                <Button variant="outline" size="sm">Sign In</Button>
+              </Link>
+              <Link to="/auth?mode=signup" style={{ textDecoration: 'none' }}>
+                <Button variant="primary" size="sm">Sign Up</Button>
+              </Link>
               <div className="d-none d-lg-flex gap-2 text-muted ms-2">
                 <Facebook size={18} />
                 <Twitter size={18} />
@@ -53,34 +60,36 @@ const Welcome = () => {
         </div>
       </nav>
 
-      <section className="container pt-5 mt-5">
-        <div className="row align-items-center g-5">
-          <div className="col-lg-6 text-center text-lg-start">
-            <span className="badge bg-primary-subtle text-primary px-3 py-2 mb-3">
-              Beta Access Now Live
-            </span>
+      <section className="hero-section d-flex align-items-center justify-content-center min-vh-100">
+        <div className="container">
+          <div className="row align-items-center g-5">
+            <div className="col-lg-6 text-center text-lg-start">
+              <span className="badge bg-primary-subtle text-primary px-3 py-2 mb-3">
+                Beta Access Now Live
+              </span>
 
-            <h1 className="display-5 fw-bold mt-3">
-              Revolutionize Your <span className="text-primary">Skin Health</span> with AI
-            </h1>
+              <h1 className="display-5 fw-bold mt-3">
+                Revolutionize Your <span className="text-primary">Skin Health</span> with AI
+              </h1>
 
-            <p className="lead text-muted mt-3">
-              Experience the future of dermatology. SkinIQ uses advanced computer vision
-              to analyze and optimize your skincare routine with scientific precision.
-            </p>
+              <p className="lead text-muted mt-3">
+                Experience the future of dermatology. SkinIQ uses advanced computer vision
+                to analyze and optimize your skincare routine with scientific precision.
+              </p>
 
-            <div className="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3 mt-4">
-              <Button variant="primary" size="lg">Start Free Analysis</Button>
-              <Button variant="outline" size="lg">How It Works</Button>
+              <div className="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3 mt-4">
+                <Button variant="primary" size="lg">Start Free Analysis</Button>
+                <Button variant="outline" size="lg">How It Works</Button>
+              </div>
             </div>
-          </div>
 
-          <div className="col-lg-6 text-center">
-            <img
-              src="https://www.skincenterofsouthmiami.com/wp-content/uploads/2018/06/Skin-Center-of-South-Miami-Facials-and-Skin-Care.jpg"
-              alt="SkinIQ Diagnostics"
-              className="img-fluid rounded-4 shadow"
-            />
+            <div className="col-lg-6 text-center">
+              <img
+                src="https://www.skincenterofsouthmiami.com/wp-content/uploads/2018/06/Skin-Center-of-South-Miami-Facials-and-Skin-Care.jpg"
+                alt="SkinIQ Diagnostics"
+                className="img-fluid rounded-4 shadow"
+              />
+            </div>
           </div>
         </div>
       </section>
@@ -93,7 +102,7 @@ const Welcome = () => {
           </p>
         </div>
 
-        <div className="row g-4">
+        <div className="row g-4 justify-content-center">
           {features.map((feature, idx) => (
             <div className="col-sm-6 col-lg-4" key={idx}>
               <Card className="feature-card h-100 text-center p-4 border-0 shadow-sm rounded-4">
