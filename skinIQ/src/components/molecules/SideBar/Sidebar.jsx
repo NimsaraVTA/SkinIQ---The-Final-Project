@@ -44,7 +44,9 @@ const Sidebar = ({ isOpen, onClose }) => {
         <li><FileText size={18} /> Reports</li>
         <li><Sparkles size={18} /> Skincare Routine</li>
         <li><ShieldCheck size={18} /> Product Checker</li>
-        <li><MessageSquare size={18} /> AI Chat</li>
+        <li onClick={() => navigate("/ai-chat")}>
+          <MessageSquare size={18} /> AI Chat
+        </li>
         <li><Bell size={18} /> Reminders</li>
 
         <hr />
