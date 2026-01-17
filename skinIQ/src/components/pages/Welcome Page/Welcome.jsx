@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Button from "../../atoms/Button/Button";
 import Card from "../../atoms/Card/Card";
 import {
@@ -41,8 +42,12 @@ const Welcome = () => {
             </ul>
 
             <div className="d-flex gap-2 align-items-center">
-              <Button variant="outline" size="sm">Sign In</Button>
-              <Button variant="primary" size="sm">Sign Up</Button>
+              <Link to="/auth?mode=signin" style={{ textDecoration: 'none' }}>
+                <Button variant="outline" size="sm">Sign In</Button>
+              </Link>
+              <Link to="/auth?mode=signup" style={{ textDecoration: 'none' }}>
+                <Button variant="primary" size="sm">Sign Up</Button>
+              </Link>
               <div className="d-none d-lg-flex gap-2 text-muted ms-2">
                 <Facebook size={18} />
                 <Twitter size={18} />
