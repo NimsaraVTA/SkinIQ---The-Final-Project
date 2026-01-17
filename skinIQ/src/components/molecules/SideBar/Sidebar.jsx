@@ -39,7 +39,9 @@ const Sidebar = ({ isOpen, onClose }) => {
       </div>
 
       <ul className="sidebar-nav">
-        <li><LayoutDashboard size={18} /> Dashboard</li>
+        <li onClick={() => navigate("/dashboard")}>
+          <LayoutDashboard size={18} /> Dashboard
+        </li>
         <li><Camera size={18} /> AI Skin Analysis</li>
         <li><FileText size={18} /> Reports</li>
         <li><Sparkles size={18} /> Skincare Routine</li>
