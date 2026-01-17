@@ -16,7 +16,9 @@ body, html {
   padding: 0;
   overflow-x: hidden; 
   width: 100%;
-  background-color: var(--bg-page);
+  background-color: #e1eef7;
+  justify-content: center;
+  align-items: center;
 }
 
 .welcome-container {
@@ -28,17 +30,17 @@ body, html {
   margin-top: 15%;
 }
 
-.header {
+.navbar {
   width: 100%; 
   position: fixed;
   top: 0;
   left: 0;
   z-index: 100;
-  background-color: #e1eaf5;
+  background-color: #bed6ef;
   display: flex;
   justify-content: center;
   transition: box-shadow 0.3s ease;
-  border-bottom: 1px solid #edf2f7; 
+  border-bottom: 1px solid #edf2f7;
 }
 
 .header.scrolled {
@@ -94,15 +96,16 @@ body, html {
   color: var(--primary);
 }
 
-.hero {
+.hero-section {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 40px;
   max-width: 1400px;
-  margin: 60px auto 100px; 
+  margin: 0px auto 50px; 
   padding: 0 40px;
+  background-color: #e1eef7;
 }
 
 .hero-content {
@@ -170,6 +173,11 @@ body, html {
   font-weight: 700;
 }
 
+#features{
+  margin-top: -100px;
+  background-color: #e1eef7;
+}
+
 .features-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -218,4 +226,11 @@ body, html {
   .nav-links, .social-icons {
     display: none; 
   }
+}
+
+.welcome-page-container {
+  font-family: "Inter", system-ui, sans-serif;
+  color: var(--text-main);
+  background-color: var(--bg-page);
+  width: 100%;
 }
