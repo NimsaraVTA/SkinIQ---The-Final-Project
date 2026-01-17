@@ -1,0 +1,14 @@
+.topbar {
+  height: 56px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-soft);
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+}

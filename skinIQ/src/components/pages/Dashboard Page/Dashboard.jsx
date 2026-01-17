@@ -3,7 +3,7 @@ import Card from "../../atoms/Card/Card";
 import Button from "../../atoms/Button/Button";
 import { Bell } from "lucide-react";
 import NotificationDrawer from "./NotificationDrawer";
-import LiveClock from "./LiveClock";
+import LiveClock from "../../molecules/Liveclock/LiveClock";
 
 const Dashboard = () => {
   const [openNotifications, setOpenNotifications] = useState(false);

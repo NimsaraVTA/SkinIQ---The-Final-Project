@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "./LiveClock.css";
 
 const LiveClock = () => {
   const [time, setTime] = useState(new Date());

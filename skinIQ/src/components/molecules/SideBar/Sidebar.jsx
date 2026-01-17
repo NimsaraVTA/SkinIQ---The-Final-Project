@@ -12,6 +12,7 @@ import {
   LogOut,
   X
 } from "lucide-react";
+import "./Sidebar.css";
 
 const Sidebar = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
