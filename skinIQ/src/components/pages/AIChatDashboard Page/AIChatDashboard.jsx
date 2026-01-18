@@ -36,5 +36,5 @@ const AIChatDashboard = () => {
     </div>
   );
 };
-
+// Chatbase account link: https://www.chatbase.co/dashboard/culture-intelligences-workspace/chatbot/h-IPSgChj0hYl-6pYTpdV/deploy
 export default AIChatDashboard;
