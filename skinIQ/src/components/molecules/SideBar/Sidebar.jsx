@@ -57,7 +57,9 @@ const Sidebar = ({ isOpen, onClose }) => {
         <li onClick={() => navigate("/ai-chat")}>
           <MessageSquare size={18} /> AI Chat
         </li>
-        <li><Bell size={18} /> Reminders</li>
+        <li onClick={() => navigate("/reminders")}>
+          <Bell size={18} /> Reminders
+        </li>
 
         <hr />
         <li onClick={() => navigate("/profile")}>

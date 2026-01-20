@@ -9,6 +9,7 @@ import AiSkinAnalysisLayout from "./components/pages/AISkinAnalysis Page/AiSkinA
 import ReportsLayout from "./components/pages/Reports Page/ReportsLayout";
 import ProductCheckerLayout from "./components/pages/Product Checker Page/ProductCheckerLayout";
 import SkincareRoutineLayout from "./components/pages/Skincare Routine Page/SkincareRoutineLayout";
+import RemindersLayout from "./components/pages/Reminders Page/RemindersLayout";
 
 const SkinIQ = () => {
   return (
@@ -23,6 +24,7 @@ const SkinIQ = () => {
         <Route path="/reports" element={<ReportsLayout />} />
         <Route path="/product-checker" element={<ProductCheckerLayout />} />
         <Route path="/skincare-routine" element={<SkincareRoutineLayout />} />
+        <Route path="/reminders" element={<RemindersLayout />} />
       </Routes>
     </Router>
   );
