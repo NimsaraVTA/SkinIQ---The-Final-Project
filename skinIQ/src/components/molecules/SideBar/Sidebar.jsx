@@ -48,7 +48,9 @@ const Sidebar = ({ isOpen, onClose }) => {
         <li onClick={() => navigate("/reports")}>
           <FileText size={18} /> Reports
         </li>
-        <li><Sparkles size={18} /> Skincare Routine</li>
+        <li onClick={() => navigate("/skincare-routine")}>
+          <Sparkles size={18} /> Skincare Routine
+        </li>
         <li onClick={() => navigate("/product-checker")}>
           <ShieldCheck size={18} /> Product Checker
         </li>
