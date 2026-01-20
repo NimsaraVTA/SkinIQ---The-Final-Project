@@ -52,8 +52,9 @@ const Sidebar = ({ isOpen, onClose }) => {
         <li><Bell size={18} /> Reminders</li>
 
         <hr />
-
-        <li><Settings size={18} /> Settings</li>
+        <li onClick={() => navigate("/profile")}>
+          <Settings size={18} /> Settings
+        </li>
         <li className="logout" onClick={handleLogout}><LogOut size={18} /> Logout</li>
       </ul>
     </aside>
