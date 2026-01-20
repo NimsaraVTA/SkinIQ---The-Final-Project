@@ -9,8 +9,6 @@ const AiSkinAnalysisDashboard = () => {
           Analyze skin conditions using AI-powered insights
         </p>
       </div>
-
-      {/* Empty dashboard body – content will be added later */}
     </>
   );
 };
