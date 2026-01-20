@@ -7,6 +7,7 @@ import AIChatLayout from "./components/pages/AIChatDashboard Page/AIChatLayout";
 import ProfileLayout from "./components/pages/User Profile Page/ProfileLayout";
 import AiSkinAnalysisLayout from "./components/pages/AISkinAnalysis Page/AiSkinAnalysisLayout";
 import ReportsLayout from "./components/pages/Reports Page/ReportsLayout";
+import ProductCheckerLayout from "./components/pages/Product Checker Page/ProductCheckerLayout";
 
 const SkinIQ = () => {
   return (
@@ -19,6 +20,7 @@ const SkinIQ = () => {
         <Route path="/profile" element={<ProfileLayout />} />
         <Route path="/ai-skin-analysis" element={<AiSkinAnalysisLayout />}/>
         <Route path="/reports" element={<ReportsLayout />} />
+        <Route path="/product-checker" element={<ProductCheckerLayout />} />
       </Routes>
     </Router>
   );
