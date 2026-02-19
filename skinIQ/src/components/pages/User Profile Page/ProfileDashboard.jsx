@@ -33,7 +33,7 @@ const ProfileDashboard = () => {
   const [passwordError, setPasswordError] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
 
-  // 🔥 Load user data
+  // Load user data
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -66,7 +66,7 @@ const ProfileDashboard = () => {
     return regex.test(password);
   };
 
-  // 🔥 Upload Image
+  // Upload Image
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
     if (!file || !currentUser) return;
