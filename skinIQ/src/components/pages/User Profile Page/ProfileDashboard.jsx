@@ -22,8 +22,6 @@ const ProfileDashboard = () => {
   );
 
   const [isUploading, setIsUploading] = useState(false);
-
-  // NEW STATE ADDED
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
 
   const [showSuccess, setShowSuccess] = useState(false);
@@ -44,10 +42,34 @@ const ProfileDashboard = () => {
   const [passwordError, setPasswordError] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
 
-  // Removed timeout (no waiting seconds now)
   const showSuccessPopup = (message) => {
     setSuccessMessage(message);
     setShowSuccess(true);
+  };
+
+  // Firebase Error Mapper
+  const getFirebaseErrorMessage = (code) => {
+    const errorMessages = {
+      "auth/wrong-password": "The current password you entered is incorrect.",
+      "auth/too-many-requests":
+        "Too many failed attempts. Please try again later.",
+      "auth/requires-recent-login":
+        "For security reasons, please log in again and try.",
+      "auth/weak-password":
+        "Your new password is too weak. Please choose a stronger one.",
+      "auth/user-not-found":
+        "User account not found.",
+      "auth/network-request-failed":
+        "Network error. Please check your internet connection.",
+      "storage/unauthorized":
+        "You do not have permission to upload this image.",
+      "storage/canceled":
+        "Image upload was canceled.",
+      "storage/unknown":
+        "An unknown error occurred while uploading image.",
+    };
+
+    return errorMessages[code] || "Something went wrong. Please try again.";
   };
 
   // Load user data
@@ -99,11 +121,12 @@ const ProfileDashboard = () => {
       await updateDoc(doc(db, "users", currentUser.uid), {
         photoURL: downloadURL,
       });
-      setProfileImage(downloadURL);
 
-      showSuccessPopup("Profile updated successfully!");
+      setProfileImage(downloadURL);
+      showSuccessPopup("Profile image updated successfully!");
     } catch (error) {
       console.error(error);
+      alert(getFirebaseErrorMessage(error.code));
     } finally {
       setIsUploading(false);
     }
@@ -128,6 +151,7 @@ const ProfileDashboard = () => {
       showSuccessPopup("Profile updated successfully!");
     } catch (error) {
       console.error(error);
+      alert(getFirebaseErrorMessage(error.code));
     }
   };
 
@@ -137,8 +161,10 @@ const ProfileDashboard = () => {
     if (window.confirm("Are you sure you want to delete your account?")) {
       try {
         await deleteUser(currentUser);
+        alert("Account deleted successfully.");
       } catch (error) {
         console.error(error);
+        alert(getFirebaseErrorMessage(error.code));
       }
     }
   };
@@ -156,24 +182,24 @@ const ProfileDashboard = () => {
     if (!currentUser) return;
 
     if (!oldPassword || !newPassword || !repeatPassword) {
-      setPasswordError("All fields are required");
+      setPasswordError("All fields are required.");
       return;
     }
 
     if (oldPassword === newPassword) {
-      setPasswordError("New password cannot be same as old password");
+      setPasswordError("New password cannot be the same as old password.");
       return;
     }
 
     if (!isStrongPassword(newPassword)) {
       setPasswordError(
-        "Password must be at least 8 characters and include uppercase, lowercase, number and special character"
+        "Password must contain at least 8 characters, including uppercase, lowercase, number and special character."
       );
       return;
     }
 
     if (newPassword !== repeatPassword) {
-      setPasswordError("Passwords do not match");
+      setPasswordError("New password and repeat password do not match.");
       return;
     }
 
@@ -200,12 +226,7 @@ const ProfileDashboard = () => {
 
     } catch (error) {
       console.error(error);
-
-      if (error.code === "auth/wrong-password") {
-        setPasswordError("Old password is incorrect");
-      } else {
-        setPasswordError("Re-login required or something went wrong.");
-      }
+      setPasswordError(getFirebaseErrorMessage(error.code));
     } finally {
       setIsUpdatingPassword(false);
     }
