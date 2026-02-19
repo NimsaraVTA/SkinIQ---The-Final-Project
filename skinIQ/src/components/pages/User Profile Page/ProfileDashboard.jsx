@@ -7,7 +7,13 @@ import { auth } from "../../services/firebase";
 import { db, storage } from "../../services/firebase";
 
 import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
-import { onAuthStateChanged, deleteUser, updatePassword } from "firebase/auth";
+import {
+  onAuthStateChanged,
+  deleteUser,
+  updatePassword,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+} from "firebase/auth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const ProfileDashboard = () => {
@@ -16,6 +22,10 @@ const ProfileDashboard = () => {
   );
 
   const [isUploading, setIsUploading] = useState(false);
+
+  // ✅ NEW STATE ADDED
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+
   const [showSuccess, setShowSuccess] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -34,10 +44,10 @@ const ProfileDashboard = () => {
   const [passwordError, setPasswordError] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
 
+  // ✅ Removed timeout (no waiting seconds now)
   const showSuccessPopup = (message) => {
     setSuccessMessage(message);
     setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
   };
 
   // Load user data
@@ -91,11 +101,10 @@ const ProfileDashboard = () => {
       });
       setProfileImage(downloadURL);
 
-      setIsUploading(false);
-
       showSuccessPopup("Profile updated successfully!");
     } catch (error) {
       console.error(error);
+    } finally {
       setIsUploading(false);
     }
   };
@@ -144,8 +153,15 @@ const ProfileDashboard = () => {
   const handlePasswordUpdate = async () => {
     const { oldPassword, newPassword, repeatPassword } = passwordData;
 
+    if (!currentUser) return;
+
     if (!oldPassword || !newPassword || !repeatPassword) {
       setPasswordError("All fields are required");
+      return;
+    }
+
+    if (oldPassword === newPassword) {
+      setPasswordError("New password cannot be same as old password");
       return;
     }
 
@@ -162,14 +178,38 @@ const ProfileDashboard = () => {
     }
 
     try {
-      await updatePassword(currentUser, newPassword);
+      setIsUpdatingPassword(true);
       setPasswordError("");
+      setShowSuccess(false);
+
+      const credential = EmailAuthProvider.credential(
+        currentUser.email,
+        oldPassword
+      );
+
+      await reauthenticateWithCredential(currentUser, credential);
+      await updatePassword(currentUser, newPassword);
+
       showSuccessPopup("Password updated successfully!");
+
+      setPasswordData({
+        oldPassword: "",
+        newPassword: "",
+        repeatPassword: "",
+      });
+
     } catch (error) {
-      setPasswordError("Re-login required before changing password.");
+      console.error(error);
+
+      if (error.code === "auth/wrong-password") {
+        setPasswordError("Old password is incorrect");
+      } else {
+        setPasswordError("Re-login required or something went wrong.");
+      }
+    } finally {
+      setIsUpdatingPassword(false);
     }
   };
-
 
   return (
     <>
@@ -290,8 +330,14 @@ const ProfileDashboard = () => {
                 <p className="password-error">{passwordError}</p>
               )}
 
-              <Button variant="primary" onClick={handlePasswordUpdate}>
-                Update Password
+              <Button
+                variant="primary"
+                onClick={handlePasswordUpdate}
+                disabled={isUpdatingPassword}
+              >
+                {isUpdatingPassword
+                  ? "Updating Password..."
+                  : "Update Password"}
               </Button>
             </div>
           </Card>
@@ -299,9 +345,7 @@ const ProfileDashboard = () => {
       </div>
 
       {showSuccess && (
-        <div className="success-popup">
-          {successMessage}
-        </div>
+        <div className="success-popup">{successMessage}</div>
       )}
     </>
   );
