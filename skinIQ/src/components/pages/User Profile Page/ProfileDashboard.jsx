@@ -17,6 +17,7 @@ const ProfileDashboard = () => {
 
   const [isUploading, setIsUploading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const [formData, setFormData] = useState({
     username: "",
@@ -32,6 +33,12 @@ const ProfileDashboard = () => {
 
   const [passwordError, setPasswordError] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
+
+  const showSuccessPopup = (message) => {
+    setSuccessMessage(message);
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000);
+  };
 
   // Load user data
   useEffect(() => {
@@ -82,15 +89,11 @@ const ProfileDashboard = () => {
       await updateDoc(doc(db, "users", currentUser.uid), {
         photoURL: downloadURL,
       });
-
       setProfileImage(downloadURL);
+
       setIsUploading(false);
 
-      setShowSuccess(true);
-      setTimeout(() => {
-        setShowSuccess(false);
-      }, 3000);
-
+      showSuccessPopup("Profile updated successfully!");
     } catch (error) {
       console.error(error);
       setIsUploading(false);
@@ -104,6 +107,8 @@ const ProfileDashboard = () => {
   const handleUpdate = async () => {
     if (!currentUser) return;
 
+    showSuccessPopup("Updating profile...");
+
     try {
       await setDoc(doc(db, "users", currentUser.uid), {
         ...formData,
@@ -111,11 +116,7 @@ const ProfileDashboard = () => {
         photoURL: profileImage,
       });
 
-      setShowSuccess(true);
-      setTimeout(() => {
-        setShowSuccess(false);
-      }, 3000);
-
+      showSuccessPopup("Profile updated successfully!");
     } catch (error) {
       console.error(error);
     }
@@ -163,14 +164,12 @@ const ProfileDashboard = () => {
     try {
       await updatePassword(currentUser, newPassword);
       setPasswordError("");
-      setShowSuccess(true);
-      setTimeout(() => {
-        setShowSuccess(false);
-      }, 3000);
+      showSuccessPopup("Password updated successfully!");
     } catch (error) {
       setPasswordError("Re-login required before changing password.");
     }
   };
+
 
   return (
     <>
@@ -301,7 +300,7 @@ const ProfileDashboard = () => {
 
       {showSuccess && (
         <div className="success-popup">
-          Profile updated successfully!
+          {successMessage}
         </div>
       )}
     </>

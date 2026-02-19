@@ -78,7 +78,7 @@
   position: fixed;
   top: 20px;
   right: 20px;
-  background-color: #4BB543;
+  background-color: #2c7be5; /* blue theme to match primary buttons */
   color: white;
   padding: 12px 20px;
   border-radius: 8px;
@@ -90,8 +90,8 @@
 }
 
 @keyframes fadeInOut {
-  0% { opacity: 0; transform: translateY(-10px); }
-  10% { opacity: 1; transform: translateY(0); }
+  /* start fully visible so it appears immediately */
+  0% { opacity: 1; transform: translateY(0); }
   90% { opacity: 1; }
   100% { opacity: 0; transform: translateY(-10px); }
 }
