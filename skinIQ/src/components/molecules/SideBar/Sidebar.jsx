@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
@@ -14,11 +14,44 @@ import {
 } from "lucide-react";
 import "./Sidebar.css";
 
+import { auth } from "../../services/firebase";
+import { db } from "../../services/firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { doc, onSnapshot } from "firebase/firestore";
+
 const Sidebar = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    navigate("/"); 
+  const [userEmail, setUserEmail] = useState("");
+  const [profileImage, setProfileImage] = useState("");
+
+  useEffect(() => {
+    let unsubscribeFirestore;
+
+    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserEmail(user.email);
+
+        // Listen to Firestore user document
+        const userDocRef = doc(db, "users", user.uid);
+
+        unsubscribeFirestore = onSnapshot(userDocRef, (docSnap) => {
+          if (docSnap.exists()) {
+            setProfileImage(docSnap.data().photoURL);
+          }
+        });
+      }
+    });
+
+    return () => {
+      if (unsubscribeFirestore) unsubscribeFirestore();
+      unsubscribeAuth();
+    };
+  }, []);
+
+  const handleLogout = async () => {
+    await signOut(auth);
+    navigate("/");
   };
 
   return (
@@ -30,11 +63,17 @@ const Sidebar = ({ isOpen, onClose }) => {
 
       <div className="sidebar-profile">
         <img
-          src="https://thepicturesdp.in/wp-content/uploads/2025/07/black-images-dp-1.jpg"
+          src={
+            profileImage
+              ? profileImage
+              : "https://img.freepik.com/premium-vector/account-avatar-profile-icon-simple-editable-vector-graphics_922357-21587.jpg"
+          }
           alt="User"
           className="profile-img"
         />
-        <h6 className="mt-3 mb-0">Thathsarani Bandara</h6>
+        <h6 className="mt-3 mb-0">
+          {userEmail ? userEmail : "Loading..."}
+        </h6>
         <span>Premium User</span>
       </div>
 
@@ -65,7 +104,9 @@ const Sidebar = ({ isOpen, onClose }) => {
         <li onClick={() => navigate("/profile")}>
           <Settings size={18} /> Settings
         </li>
-        <li className="logout" onClick={handleLogout}><LogOut size={18} /> Logout</li>
+        <li className="logout" onClick={handleLogout}>
+          <LogOut size={18} /> Logout
+        </li>
       </ul>
     </aside>
   );
