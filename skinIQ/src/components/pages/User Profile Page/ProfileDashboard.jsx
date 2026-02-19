@@ -1,17 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "../../atoms/Card/Card";
 import Button from "../../atoms/Button/Button";
 import "./Profile.css";
 
+import { auth } from "../../services/firebase";
+import { db, storage } from "../../services/firebase";
+
+import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
+import { onAuthStateChanged, deleteUser, updatePassword } from "firebase/auth";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+
 const ProfileDashboard = () => {
   const [profileImage, setProfileImage] = useState(
-    "https://thepicturesdp.in/wp-content/uploads/2025/07/black-images-dp-1.jpg"
+    "https://img.freepik.com/premium-vector/account-avatar-profile-icon-simple-editable-vector-graphics_922357-21587.jpg"
   );
 
+  const [isUploading, setIsUploading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+
   const [formData, setFormData] = useState({
-    username: "Thathsarani Bandara",
-    sex: "Female",
-    age: 23,
+    username: "",
+    sex: "",
+    age: "",
   });
 
   const [passwordData, setPasswordData] = useState({
@@ -21,6 +31,34 @@ const ProfileDashboard = () => {
   });
 
   const [passwordError, setPasswordError] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
+
+  // Load user data
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setCurrentUser(user);
+
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setFormData({
+            username: data.username || "",
+            sex: data.sex || "",
+            age: data.age || "",
+          });
+
+          if (data.photoURL) {
+            setProfileImage(data.photoURL);
+          }
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const isStrongPassword = (password) => {
     const regex =
@@ -28,10 +66,34 @@ const ProfileDashboard = () => {
     return regex.test(password);
   };
 
-  const handleImageChange = (e) => {
+  // Upload Image
+  const handleImageChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setProfileImage(URL.createObjectURL(file));
+    if (!file || !currentUser) return;
+
+    try {
+      setIsUploading(true);
+
+      const storageRef = ref(storage, `profileImages/${currentUser.uid}`);
+      await uploadBytes(storageRef, file);
+
+      const downloadURL = await getDownloadURL(storageRef);
+
+      await updateDoc(doc(db, "users", currentUser.uid), {
+        photoURL: downloadURL,
+      });
+
+      setProfileImage(downloadURL);
+      setIsUploading(false);
+
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
+
+    } catch (error) {
+      console.error(error);
+      setIsUploading(false);
     }
   };
 
@@ -39,13 +101,35 @@ const ProfileDashboard = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleUpdate = () => {
-    alert("Profile updated (UI only)");
+  const handleUpdate = async () => {
+    if (!currentUser) return;
+
+    try {
+      await setDoc(doc(db, "users", currentUser.uid), {
+        ...formData,
+        email: currentUser.email,
+        photoURL: profileImage,
+      });
+
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
+
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
+    if (!currentUser) return;
+
     if (window.confirm("Are you sure you want to delete your account?")) {
-      alert("Account deleted (UI only)");
+      try {
+        await deleteUser(currentUser);
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -56,7 +140,7 @@ const ProfileDashboard = () => {
     });
   };
 
-  const handlePasswordUpdate = () => {
+  const handlePasswordUpdate = async () => {
     const { oldPassword, newPassword, repeatPassword } = passwordData;
 
     if (!oldPassword || !newPassword || !repeatPassword) {
@@ -76,8 +160,16 @@ const ProfileDashboard = () => {
       return;
     }
 
-    setPasswordError("");
-    alert("Password updated successfully (UI only)");
+    try {
+      await updatePassword(currentUser, newPassword);
+      setPasswordError("");
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
+    } catch (error) {
+      setPasswordError("Re-login required before changing password.");
+    }
   };
 
   return (
@@ -94,6 +186,11 @@ const ProfileDashboard = () => {
           <Card className="profile-card">
             <div className="profile-image-section">
               <img src={profileImage} alt="Profile" />
+
+              {isUploading && (
+                <p className="uploading-text">Uploading...</p>
+              )}
+
               <label className="upload-btn">
                 Change Your Profile Photo
                 <input type="file" hidden onChange={handleImageChange} />
@@ -201,6 +298,12 @@ const ProfileDashboard = () => {
           </Card>
         </div>
       </div>
+
+      {showSuccess && (
+        <div className="success-popup">
+          Profile updated successfully!
+        </div>
+      )}
     </>
   );
 };
