@@ -24,6 +24,7 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const [userEmail, setUserEmail] = useState("");
   const [profileImage, setProfileImage] = useState("");
+  const [username, setUsername] = useState("");
 
   useEffect(() => {
     let unsubscribeFirestore;
@@ -37,7 +38,10 @@ const Sidebar = ({ isOpen, onClose }) => {
 
         unsubscribeFirestore = onSnapshot(userDocRef, (docSnap) => {
           if (docSnap.exists()) {
-            setProfileImage(docSnap.data().photoURL);
+            const data = docSnap.data();
+            setProfileImage(data.photoURL);
+            // keep username if provided
+            setUsername(data.username || "");
           }
         });
       }
@@ -71,7 +75,9 @@ const Sidebar = ({ isOpen, onClose }) => {
           alt="User"
           className="profile-img"
         />
-        <h6 className="mt-3 mb-0">
+        {/* show username if set above email */}
+        {username && <h5 className="mt-3 mb-0">{username}</h5>}
+        <h6 className="mt-1 mb-0">
           {userEmail ? userEmail : "Loading..."}
         </h6>
         <span>Premium User</span>

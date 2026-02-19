@@ -7,7 +7,13 @@ import { auth } from "../../services/firebase";
 import { db, storage } from "../../services/firebase";
 
 import { doc, setDoc, getDoc, updateDoc } from "firebase/firestore";
-import { onAuthStateChanged, deleteUser, updatePassword } from "firebase/auth";
+import {
+  onAuthStateChanged,
+  deleteUser,
+  updatePassword,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+} from "firebase/auth";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const ProfileDashboard = () => {
@@ -16,7 +22,10 @@ const ProfileDashboard = () => {
   );
 
   const [isUploading, setIsUploading] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+
   const [showSuccess, setShowSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   const [formData, setFormData] = useState({
     username: "",
@@ -32,6 +41,36 @@ const ProfileDashboard = () => {
 
   const [passwordError, setPasswordError] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
+
+  const showSuccessPopup = (message) => {
+    setSuccessMessage(message);
+    setShowSuccess(true);
+  };
+
+  // Firebase Error Mapper
+  const getFirebaseErrorMessage = (code) => {
+    const errorMessages = {
+      "auth/wrong-password": "The current password you entered is incorrect.",
+      "auth/too-many-requests":
+        "Too many failed attempts. Please try again later.",
+      "auth/requires-recent-login":
+        "For security reasons, please log in again and try.",
+      "auth/weak-password":
+        "Your new password is too weak. Please choose a stronger one.",
+      "auth/user-not-found":
+        "User account not found.",
+      "auth/network-request-failed":
+        "Network error. Please check your internet connection.",
+      "storage/unauthorized":
+        "You do not have permission to upload this image.",
+      "storage/canceled":
+        "Image upload was canceled.",
+      "storage/unknown":
+        "An unknown error occurred while uploading image.",
+    };
+
+    return errorMessages[code] || "Something went wrong. Please try again.";
+  };
 
   // Load user data
   useEffect(() => {
@@ -84,15 +123,11 @@ const ProfileDashboard = () => {
       });
 
       setProfileImage(downloadURL);
-      setIsUploading(false);
-
-      setShowSuccess(true);
-      setTimeout(() => {
-        setShowSuccess(false);
-      }, 3000);
-
+      showSuccessPopup("Profile image updated successfully!");
     } catch (error) {
       console.error(error);
+      alert(getFirebaseErrorMessage(error.code));
+    } finally {
       setIsUploading(false);
     }
   };
@@ -104,6 +139,8 @@ const ProfileDashboard = () => {
   const handleUpdate = async () => {
     if (!currentUser) return;
 
+    showSuccessPopup("Updating profile...");
+
     try {
       await setDoc(doc(db, "users", currentUser.uid), {
         ...formData,
@@ -111,13 +148,10 @@ const ProfileDashboard = () => {
         photoURL: profileImage,
       });
 
-      setShowSuccess(true);
-      setTimeout(() => {
-        setShowSuccess(false);
-      }, 3000);
-
+      showSuccessPopup("Profile updated successfully!");
     } catch (error) {
       console.error(error);
+      alert(getFirebaseErrorMessage(error.code));
     }
   };
 
@@ -127,8 +161,10 @@ const ProfileDashboard = () => {
     if (window.confirm("Are you sure you want to delete your account?")) {
       try {
         await deleteUser(currentUser);
+        alert("Account deleted successfully.");
       } catch (error) {
         console.error(error);
+        alert(getFirebaseErrorMessage(error.code));
       }
     }
   };
@@ -143,32 +179,56 @@ const ProfileDashboard = () => {
   const handlePasswordUpdate = async () => {
     const { oldPassword, newPassword, repeatPassword } = passwordData;
 
+    if (!currentUser) return;
+
     if (!oldPassword || !newPassword || !repeatPassword) {
-      setPasswordError("All fields are required");
+      setPasswordError("All fields are required.");
+      return;
+    }
+
+    if (oldPassword === newPassword) {
+      setPasswordError("New password cannot be the same as old password.");
       return;
     }
 
     if (!isStrongPassword(newPassword)) {
       setPasswordError(
-        "Password must be at least 8 characters and include uppercase, lowercase, number and special character"
+        "Password must contain at least 8 characters, including uppercase, lowercase, number and special character."
       );
       return;
     }
 
     if (newPassword !== repeatPassword) {
-      setPasswordError("Passwords do not match");
+      setPasswordError("New password and repeat password do not match.");
       return;
     }
 
     try {
-      await updatePassword(currentUser, newPassword);
+      setIsUpdatingPassword(true);
       setPasswordError("");
-      setShowSuccess(true);
-      setTimeout(() => {
-        setShowSuccess(false);
-      }, 3000);
+      setShowSuccess(false);
+
+      const credential = EmailAuthProvider.credential(
+        currentUser.email,
+        oldPassword
+      );
+
+      await reauthenticateWithCredential(currentUser, credential);
+      await updatePassword(currentUser, newPassword);
+
+      showSuccessPopup("Password updated successfully!");
+
+      setPasswordData({
+        oldPassword: "",
+        newPassword: "",
+        repeatPassword: "",
+      });
+
     } catch (error) {
-      setPasswordError("Re-login required before changing password.");
+      console.error(error);
+      setPasswordError(getFirebaseErrorMessage(error.code));
+    } finally {
+      setIsUpdatingPassword(false);
     }
   };
 
@@ -291,8 +351,14 @@ const ProfileDashboard = () => {
                 <p className="password-error">{passwordError}</p>
               )}
 
-              <Button variant="primary" onClick={handlePasswordUpdate}>
-                Update Password
+              <Button
+                variant="primary"
+                onClick={handlePasswordUpdate}
+                disabled={isUpdatingPassword}
+              >
+                {isUpdatingPassword
+                  ? "Updating Password..."
+                  : "Update Password"}
               </Button>
             </div>
           </Card>
@@ -300,9 +366,7 @@ const ProfileDashboard = () => {
       </div>
 
       {showSuccess && (
-        <div className="success-popup">
-          Profile updated successfully!
-        </div>
+        <div className="success-popup">{successMessage}</div>
       )}
     </>
   );
