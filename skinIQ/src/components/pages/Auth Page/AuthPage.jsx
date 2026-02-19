@@ -38,6 +38,30 @@ const AuthPage = () => {
 
   const clearErrors = () => setErrors({});
 
+  // Firebase Error Mapper
+  const getFirebaseErrorMessage = (code) => {
+    const messages = {
+      "auth/email-already-in-use":
+        "This email is already registered. Please sign in instead.",
+      "auth/invalid-email":
+        "Please enter a valid email address.",
+      "auth/user-not-found":
+        "No account found with this email.",
+      "auth/wrong-password":
+        "Incorrect password. Please try again.",
+      "auth/weak-password":
+        "Password should be at least 6 characters long.",
+      "auth/too-many-requests":
+        "Too many attempts. Please try again later.",
+      "auth/network-request-failed":
+        "Network error. Please check your internet connection.",
+      "auth/invalid-credential":
+        "Invalid email or password.",
+    };
+
+    return messages[code] || "Something went wrong. Please try again.";
+  };
+
   const isMobileValid = (phone) => {
     if (!phone) return false;
     const digits = phone.replace(/\D/g, "");
@@ -67,10 +91,8 @@ const AuthPage = () => {
       }));
       return;
     }
-    // OTP is UI-only for now
   };
 
-  // MAIN AUTH HANDLER
   const handleSubmit = async (e) => {
     e.preventDefault();
     clearErrors();
@@ -104,9 +126,18 @@ const AuthPage = () => {
 
       navigate("/dashboard");
     } catch (error) {
-      setErrors({
-        password: error.message.replace("Firebase:", "").trim(),
-      });
+      const friendlyMessage = getFirebaseErrorMessage(error.code);
+
+      // Assign properly to email or password field
+      if (
+        error.code === "auth/user-not-found" ||
+        error.code === "auth/invalid-email" ||
+        error.code === "auth/email-already-in-use"
+      ) {
+        setErrors({ username: friendlyMessage });
+      } else {
+        setErrors({ password: friendlyMessage });
+      }
     }
   };
 
