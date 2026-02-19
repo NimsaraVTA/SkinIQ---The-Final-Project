@@ -23,7 +23,7 @@ const ProfileDashboard = () => {
 
   const [isUploading, setIsUploading] = useState(false);
 
-  // ✅ NEW STATE ADDED
+  // NEW STATE ADDED
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
 
   const [showSuccess, setShowSuccess] = useState(false);
@@ -44,7 +44,7 @@ const ProfileDashboard = () => {
   const [passwordError, setPasswordError] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
 
-  // ✅ Removed timeout (no waiting seconds now)
+  // Removed timeout (no waiting seconds now)
   const showSuccessPopup = (message) => {
     setSuccessMessage(message);
     setShowSuccess(true);
