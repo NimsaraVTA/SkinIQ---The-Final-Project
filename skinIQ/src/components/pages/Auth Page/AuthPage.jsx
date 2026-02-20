@@ -308,7 +308,9 @@ const AuthPage = () => {
                 />
                 <span className="terms-text">
                   I agree to the Terms & Conditions and Privacy Policy of
-                  SkinIQ.
+                  SkinIQ. I understand that this AI-based skin monitoring
+                  platform provides analysis for informational purposes only
+                  and does not replace professional medical advice.
                 </span>
               </div>
               {errors.terms && (
