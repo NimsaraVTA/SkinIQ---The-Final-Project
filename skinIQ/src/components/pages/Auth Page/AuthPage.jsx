@@ -5,9 +5,10 @@ import "react-phone-input-2/lib/style.css";
 import "./AuthPage.css";
 
 import { auth } from "../../services/firebase";
-import { 
+import {
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  sendEmailVerification,
 } from "firebase/auth";
 
 const AuthPage = () => {
@@ -32,13 +33,14 @@ const AuthPage = () => {
   const [showOtp, setShowOtp] = useState(false);
   const [otp, setOtp] = useState("");
   const [errors, setErrors] = useState({});
+  const [showPopup, setShowPopup] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
 
   const signInRef = useRef(null);
   const signUpRef = useRef(null);
 
   const clearErrors = () => setErrors({});
 
-  // Firebase Error Mapper
   const getFirebaseErrorMessage = (code) => {
     const messages = {
       "auth/email-already-in-use":
@@ -110,6 +112,9 @@ const AuthPage = () => {
       if (!mobile) newErrors.mobile = "Mobile number is required.";
       else if (!isMobileValid(mobile))
         newErrors.mobile = "Please enter a valid mobile number.";
+
+      if (!acceptTerms)
+        newErrors.terms = "You must accept the terms and conditions.";
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -119,16 +124,38 @@ const AuthPage = () => {
 
     try {
       if (isSignUp) {
-        await createUserWithEmailAndPassword(auth, email, password);
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        await sendEmailVerification(userCredential.user);
+
+        setShowPopup(true);
+        setTimeout(() => setShowPopup(false), 3000);
+
+        handleSwitch(false);
+        return;
       } else {
-        await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        if (!userCredential.user.emailVerified) {
+          setErrors({
+            username: "Please verify your email before logging in.",
+          });
+          return;
+        }
       }
 
       navigate("/dashboard");
     } catch (error) {
       const friendlyMessage = getFirebaseErrorMessage(error.code);
 
-      // Assign properly to email or password field
       if (
         error.code === "auth/user-not-found" ||
         error.code === "auth/invalid-email" ||
@@ -145,6 +172,7 @@ const AuthPage = () => {
     clearErrors();
     setShowOtp(false);
     setOtp("");
+    setAcceptTerms(false);
     if (toSignUp) {
       signInRef.current?.reset();
     } else {
@@ -156,6 +184,12 @@ const AuthPage = () => {
 
   return (
     <div className="auth-container">
+      {showPopup && (
+        <div className="popup-message">
+          Verification email sent! Please check your inbox.
+        </div>
+      )}
+
       <div className="left">
         <h1>SkinIQ</h1>
         <p className="intro">
@@ -188,11 +222,7 @@ const AuthPage = () => {
             <form ref={signInRef} className="panel" onSubmit={handleSubmit}>
               <h3>Welcome Back</h3>
 
-              <input
-                name="username"
-                className="input"
-                placeholder="Email"
-              />
+              <input name="username" className="input" placeholder="Email" />
               {errors.username && (
                 <div className="error">{errors.username}</div>
               )}
@@ -212,14 +242,11 @@ const AuthPage = () => {
               </button>
             </form>
 
+            {/* SIGN UP */}
             <form ref={signUpRef} className="panel" onSubmit={handleSubmit}>
               <h3>Create Account</h3>
 
-              <input
-                name="username"
-                className="input"
-                placeholder="Email"
-              />
+              <input name="username" className="input" placeholder="Email" />
               {errors.username && (
                 <div className="error">{errors.username}</div>
               )}
@@ -253,25 +280,33 @@ const AuthPage = () => {
                 </button>
               </div>
 
-              {showOtp && (
-                <div className="otp-row">
-                  <input
-                    className="otp-input"
-                    placeholder="Enter code"
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                  />
-                  <button
-                    type="button"
-                    className="otp-action"
-                    onClick={handleConfirmOtp}
-                  >
-                    Confirm
-                  </button>
-                </div>
+              {/* TERMS SECTION */}
+              <div className="terms">
+                <input
+                  type="checkbox"
+                  checked={acceptTerms}
+                  onChange={(e) => setAcceptTerms(e.target.checked)}
+                />
+                <span className="terms-text">
+                  I agree to the Terms & Conditions and Privacy Policy of
+                  SkinIQ. I understand that this AI-based skin monitoring
+                  platform provides analysis for informational purposes only
+                  and does not replace professional medical advice.
+                </span>
+              </div>
+              {errors.terms && (
+                <div className="error">{errors.terms}</div>
               )}
 
-              <button className="action" type="submit">
+              <button
+                className="action"
+                type="submit"
+                disabled={!acceptTerms}
+                style={{
+                  opacity: acceptTerms ? 1 : 0.6,
+                  cursor: acceptTerms ? "pointer" : "not-allowed",
+                }}
+              >
                 Sign Up
               </button>
             </form>
