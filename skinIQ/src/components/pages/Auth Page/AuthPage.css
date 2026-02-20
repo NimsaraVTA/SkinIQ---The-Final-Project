@@ -137,3 +137,30 @@ html, body, #root { height: 100%; width: 100%; margin: 0; padding: 0; }
   .auth-container { flex-direction: column; position: relative; min-height: 100vh; }
   .auth-container .left, .auth-container .right { flex: 0 0 auto; width: 100%; padding: 2rem; }
 }
+
+.popup-message {
+  position: fixed;
+  top: 20px;
+  right: 25px;
+  background-color: rgba(59,130,246,1);
+  color: white;
+  padding: 10px 15px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  animation: fadeInOut 3s ease forwards;
+  z-index: 1000;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(-10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.terms-text {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.5;
+  text-align: justify;   
+}
