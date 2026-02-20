@@ -9,6 +9,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   sendEmailVerification,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 
 const AuthPage = () => {
@@ -35,11 +36,15 @@ const AuthPage = () => {
   const [errors, setErrors] = useState({});
   const [showPopup, setShowPopup] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [resetMessage, setResetMessage] = useState("");
 
   const signInRef = useRef(null);
   const signUpRef = useRef(null);
 
-  const clearErrors = () => setErrors({});
+  const clearErrors = () => {
+    setErrors({});
+    setResetMessage("");
+  };
 
   const getFirebaseErrorMessage = (code) => {
     const messages = {
@@ -70,29 +75,32 @@ const AuthPage = () => {
     return digits.length >= 8;
   };
 
-  const handleVerify = () => {
-    clearErrors();
-    if (!mobile) {
-      setErrors({ mobile: "Please enter your mobile number." });
-      setShowOtp(false);
-      return;
-    }
-    if (!isMobileValid(mobile)) {
-      setErrors({ mobile: "Please enter a valid mobile number." });
-      setShowOtp(false);
-      return;
-    }
-    setShowOtp(true);
-  };
+  // FORGOT PASSWORD
+  const handleForgotPassword = async () => {
+  clearErrors();
 
-  const handleConfirmOtp = () => {
-    if (!otp.trim()) {
-      setErrors((prev) => ({
-        ...prev,
-        otp: "Please enter the verification code.",
-      }));
-      return;
-    }
+  const email =
+    signInRef.current?.username?.value?.trim() || "";
+
+  if (!email) {
+    setErrors({ username: "Please enter your email first." });
+    return;
+  }
+
+  try {
+    await sendPasswordResetEmail(auth, email);
+
+    setResetMessage(
+      "Password reset email sent! Please check your inbox."
+    );
+
+    setTimeout(() => {
+      setResetMessage("");
+    }, 10000);
+
+  } catch (error) {
+    setErrors({ username: getFirebaseErrorMessage(error.code) });
+  }
   };
 
   const handleSubmit = async (e) => {
@@ -237,9 +245,28 @@ const AuthPage = () => {
                 <div className="error">{errors.password}</div>
               )}
 
+              <div
+                onClick={handleForgotPassword}
+                style={{
+                  textAlign: "right",
+                  fontSize: "14px",
+                  color: "#007bff",
+                  cursor: "pointer",
+                  marginBottom: "10px",
+                }}
+              >
+                Forgot password?
+              </div>
+
               <button className="action" type="submit">
                 Sign In
               </button>
+
+              {resetMessage && (
+                <div className="success-message">
+                  ✅ {resetMessage}
+                </div>
+              )}
             </form>
 
             {/* SIGN UP */}
@@ -271,16 +298,8 @@ const AuthPage = () => {
                 {errors.mobile && (
                   <div className="error">{errors.mobile}</div>
                 )}
-                <button
-                  type="button"
-                  className="verify-btn"
-                  onClick={handleVerify}
-                >
-                  Verify
-                </button>
               </div>
 
-              {/* TERMS SECTION */}
               <div className="terms">
                 <input
                   type="checkbox"
@@ -289,9 +308,7 @@ const AuthPage = () => {
                 />
                 <span className="terms-text">
                   I agree to the Terms & Conditions and Privacy Policy of
-                  SkinIQ. I understand that this AI-based skin monitoring
-                  platform provides analysis for informational purposes only
-                  and does not replace professional medical advice.
+                  SkinIQ.
                 </span>
               </div>
               {errors.terms && (
@@ -313,7 +330,6 @@ const AuthPage = () => {
           </div>
         </div>
       </div>
-      <div id="recaptcha-container"></div>
     </div>
   );
 };
