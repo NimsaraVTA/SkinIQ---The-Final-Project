@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Button from "../../atoms/Button/Button";
 import Card from "../../atoms/Card/Card";
-import "./Welcome.css"; // Ensure your CSS is imported
+import "./Welcome.css"; 
 import {
   Camera, UserCircle, FileText, Sparkles,
   ShieldCheck, MessageSquare, Bell,
@@ -20,29 +20,37 @@ const features = [
 ];
 
 const Welcome = () => {
+
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <div className="welcome-page-container">
-      
-      <nav className="navbar navbar-expand-lg fixed-top bg-light border-bottom shadow-sm">
-        <div className="container">
+      <nav className="navbar fixed-top bg-light border-bottom shadow-sm" style={{ zIndex: 100 }}>
+        <div className="container d-flex align-items-center justify-content-between">
           <span className="navbar-brand fw-bold text-primary fs-4">SkinIQ</span>
 
+          {/* Hamburger icon for mobile */}
           <button
-            className="navbar-toggler"
+            className="navbar-toggler d-lg-none"
             type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarContent"
+            aria-label="Toggle navigation"
+            onClick={() => setMenuOpen((open) => !open)}
+            style={{ background: 'none', border: 'none', outline: 'none', padding: 8 }}
           >
-            <span className="navbar-toggler-icon" />
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2c7be5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
           </button>
 
-          <div className="collapse navbar-collapse" id="navbarContent">
-            <ul className="navbar-nav mx-auto mb-2 mb-lg-0">
+          {/* Desktop nav */}
+          <div className="d-none d-lg-flex align-items-center w-100 justify-content-between">
+            <ul className="navbar-nav flex-row gap-3 mb-0">
               <li className="nav-item"><a className="nav-link" href="#features">Features</a></li>
               <li className="nav-item"><a className="nav-link" href="#how">How It Works</a></li>
               <li className="nav-item"><a className="nav-link" href="#contact">Contact</a></li>
             </ul>
-
             <div className="d-flex gap-2 align-items-center">
               <Link to="/auth?mode=signin" style={{ textDecoration: 'none' }}>
                 <Button variant="outline" size="sm">Sign In</Button>
@@ -50,13 +58,59 @@ const Welcome = () => {
               <Link to="/auth?mode=signup" style={{ textDecoration: 'none' }}>
                 <Button variant="primary" size="sm">Sign Up</Button>
               </Link>
-              <div className="d-none d-lg-flex gap-2 text-muted ms-2">
+              <div className="d-flex gap-2 text-muted ms-2">
                 <Facebook size={18} />
                 <Twitter size={18} />
                 <Instagram size={18} />
               </div>
             </div>
           </div>
+
+          {menuOpen && (
+            <div
+              className="position-fixed top-0 start-0 w-100 h-100 bg-white d-lg-none"
+              style={{ zIndex: 200, paddingTop: 70 }}
+            >
+              <div className="container">
+                <ul className="navbar-nav flex-column gap-3 mb-4">
+                  <li className="nav-item"><a className="nav-link fs-5" href="#features" onClick={() => setMenuOpen(false)}>Features</a></li>
+                  <li className="nav-item"><a className="nav-link fs-5" href="#how" onClick={() => setMenuOpen(false)}>How It Works</a></li>
+                  <li className="nav-item"><a className="nav-link fs-5" href="#contact" onClick={() => setMenuOpen(false)}>Contact</a></li>
+                </ul>
+                <div className="d-flex flex-column gap-3 mb-4">
+                  <Link to="/auth?mode=signin" style={{ textDecoration: 'none' }} onClick={() => setMenuOpen(false)}>
+                    <Button variant="outline" size="md" style={{ width: '100%' }}>Sign In</Button>
+                  </Link>
+                  <Link to="/auth?mode=signup" style={{ textDecoration: 'none' }} onClick={() => setMenuOpen(false)}>
+                    <Button variant="primary" size="md" style={{ width: '100%' }}>Sign Up</Button>
+                  </Link>
+                </div>
+                <div className="d-flex gap-3 text-muted mb-2">
+                  <Facebook size={22} />
+                  <Twitter size={22} />
+                  <Instagram size={22} />
+                </div>
+                <button
+                  aria-label="Close menu"
+                  onClick={() => setMenuOpen(false)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    position: 'absolute',
+                    top: 18,
+                    right: 18,
+                    padding: 8,
+                    cursor: 'pointer',
+                  }}
+                >
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#2c7be5" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </nav>
 
