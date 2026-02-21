@@ -11,7 +11,6 @@ import {
 
 const features = [
   { title: "AI Skin Analysis", desc: "Upload a photo for instant clinical-grade analysis of skin concerns.", icon: <Camera size={28} /> },
-  { title: "Health Profile", desc: "Securely track your skin journey and history in one centralized dashboard.", icon: <UserCircle size={28} /> },
   { title: "Detailed Reports", desc: "Get comprehensive PDF insights into your skin's hydration and texture.", icon: <FileText size={28} /> },
   { title: "Personalized Routines", desc: "AI-curated AM/PM regimens tailored specifically to your skin type.", icon: <Sparkles size={28} /> },
   { title: "Compatibility Check", desc: "Scan product ingredients to ensure they won't irritate your skin.", icon: <ShieldCheck size={28} /> },
