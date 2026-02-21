@@ -47,6 +47,7 @@ The AI models are implemented using **Python and TensorFlow** and integrated wit
 * Firebase Authentication
 * Firebase Firestore
 * Firebase Storage
+* Firebase Hosting
 
 ### AI & Machine Learning
 
