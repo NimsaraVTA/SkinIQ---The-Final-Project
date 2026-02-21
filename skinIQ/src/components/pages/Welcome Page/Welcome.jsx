@@ -24,11 +24,28 @@ const Welcome = () => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <div className="welcome-page-container">
-      <nav className="navbar fixed-top bg-light border-bottom shadow-sm" style={{ zIndex: 100 }}>
-        <div className="container d-flex align-items-center justify-content-between">
+    <div className="welcome-page-container" style={{ width: '100vw', maxWidth: '100vw', overflowX: 'hidden' }}>
+      <nav className="navbar fixed-top bg-light border-bottom shadow-sm" style={{ zIndex: 100, width: '100vw', maxWidth: '100vw' }}>
+        <div className="d-flex align-items-center justify-content-between" style={{ width: '100vw', maxWidth: '100vw', padding: '0 32px' }}>
           <span className="navbar-brand fw-bold text-primary fs-4">SkinIQ</span>
-
+          <ul className="navbar-nav flex-row gap-3 mb-0 d-none d-lg-flex">
+            <li className="nav-item"><a className="nav-link" href="#features">Features</a></li>
+            <li className="nav-item"><a className="nav-link" href="#how">How It Works</a></li>
+            <li className="nav-item"><a className="nav-link" href="#contact">Contact</a></li>
+          </ul>
+          <div className="d-none d-lg-flex gap-2 align-items-center">
+            <Link to="/auth?mode=signin" style={{ textDecoration: 'none' }}>
+              <Button variant="outline" size="sm">Sign In</Button>
+            </Link>
+            <Link to="/auth?mode=signup" style={{ textDecoration: 'none' }}>
+              <Button variant="primary" size="sm">Sign Up</Button>
+            </Link>
+            <div className="d-flex gap-2 text-muted ms-2">
+              <Facebook size={18} />
+              <Twitter size={18} />
+              <Instagram size={18} />
+            </div>
+          </div>
           {/* Hamburger icon for mobile */}
           <button
             className="navbar-toggler d-lg-none"
@@ -43,53 +60,15 @@ const Welcome = () => {
               <line x1="3" y1="18" x2="21" y2="18" />
             </svg>
           </button>
-
-          {/* Desktop nav */}
-          <div className="d-none d-lg-flex align-items-center w-100 justify-content-between">
-            <ul className="navbar-nav flex-row gap-3 mb-0">
-              <li className="nav-item"><a className="nav-link" href="#features">Features</a></li>
-              <li className="nav-item"><a className="nav-link" href="#how">How It Works</a></li>
-              <li className="nav-item"><a className="nav-link" href="#contact">Contact</a></li>
-            </ul>
-            <div className="d-flex gap-2 align-items-center">
-              <Link to="/auth?mode=signin" style={{ textDecoration: 'none' }}>
-                <Button variant="outline" size="sm">Sign In</Button>
-              </Link>
-              <Link to="/auth?mode=signup" style={{ textDecoration: 'none' }}>
-                <Button variant="primary" size="sm">Sign Up</Button>
-              </Link>
-              <div className="d-flex gap-2 text-muted ms-2">
-                <Facebook size={18} />
-                <Twitter size={18} />
-                <Instagram size={18} />
-              </div>
-            </div>
-          </div>
-
-          {menuOpen && (
-            <div
-              className="position-fixed top-0 start-0 w-100 h-100 bg-white d-lg-none"
-              style={{ zIndex: 200, paddingTop: 70 }}
-            >
-              <div className="container">
-                <ul className="navbar-nav flex-column gap-3 mb-4">
-                  <li className="nav-item"><a className="nav-link fs-5" href="#features" onClick={() => setMenuOpen(false)}>Features</a></li>
-                  <li className="nav-item"><a className="nav-link fs-5" href="#how" onClick={() => setMenuOpen(false)}>How It Works</a></li>
-                  <li className="nav-item"><a className="nav-link fs-5" href="#contact" onClick={() => setMenuOpen(false)}>Contact</a></li>
-                </ul>
-                <div className="d-flex flex-column gap-3 mb-4">
-                  <Link to="/auth?mode=signin" style={{ textDecoration: 'none' }} onClick={() => setMenuOpen(false)}>
-                    <Button variant="outline" size="md" style={{ width: '100%' }}>Sign In</Button>
-                  </Link>
-                  <Link to="/auth?mode=signup" style={{ textDecoration: 'none' }} onClick={() => setMenuOpen(false)}>
-                    <Button variant="primary" size="md" style={{ width: '100%' }}>Sign Up</Button>
-                  </Link>
-                </div>
-                <div className="d-flex gap-3 text-muted mb-2">
-                  <Facebook size={22} />
-                  <Twitter size={22} />
-                  <Instagram size={22} />
-                </div>
+        </div>
+        {/* Mobile menu overlay with custom options */}
+        {menuOpen && (
+          <div
+            className="position-fixed top-0 start-0 w-100 h-100 d-lg-none"
+            style={{ zIndex: 200, paddingTop: 0, background: 'rgba(255,255,255,0.5)' }}
+          >
+            <div style={{ width: '100vw', maxWidth: '100vw', height: '100vh', display: 'flex', justifyContent: 'flex-end', alignItems: 'stretch', position: 'relative' }}>
+              <div style={{ width: '340px', maxWidth: '90vw', height: '100%', background: '#bed6ef', boxShadow: '-4px 0 24px rgba(44,123,229,0.08)', padding: '32px 24px 24px 24px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', position: 'relative' }}>
                 <button
                   aria-label="Close menu"
                   onClick={() => setMenuOpen(false)}
@@ -108,35 +87,51 @@ const Welcome = () => {
                     <line x1="6" y1="6" x2="18" y2="18" />
                   </svg>
                 </button>
+                <div style={{ height: 40 }} />
+                <span className="navbar-brand fw-bold text-primary fs-4 mb-4 mt-2" style={{ alignSelf: 'flex-end', borderBottom: '1px solid #edf2f7', width: '100%', textAlign: 'right', paddingBottom: 8 }}>SkinIQ</span>
+                <a href="#features" className="nav-link fw-bold mb-0" style={{ color: 'var(--text-main)', fontSize: '17px', alignSelf: 'flex-end', borderBottom: '1px solid #edf2f7', width: '100%', textAlign: 'right', padding: '12px 0' }} onClick={() => setMenuOpen(false)}>Features</a>
+                <a href="#how" className="nav-link fw-bold mb-0" style={{ color: 'var(--text-main)', fontSize: '17px', alignSelf: 'flex-end', borderBottom: '1px solid #edf2f7', width: '100%', textAlign: 'right', padding: '12px 0' }} onClick={() => setMenuOpen(false)}>How It Works</a>
+                <a href="#contact" className="nav-link fw-bold mb-0" style={{ color: 'var(--text-main)', fontSize: '17px', alignSelf: 'flex-end', borderBottom: '1px solid #edf2f7', width: '100%', textAlign: 'right', padding: '12px 0' }} onClick={() => setMenuOpen(false)}>Contact</a>
+                <Link to="/auth?mode=signin" style={{ textDecoration: 'none', alignSelf: 'flex-end', width: '100%' }} onClick={() => setMenuOpen(false)}>
+                  <div style={{ borderBottom: '1px solid #edf2f7', width: '100%', textAlign: 'right', padding: '12px 0' }}>
+                    <Button variant="outline" size="md" style={{ width: '120px', color: 'var(--primary)', borderColor: 'var(--primary)', fontWeight: 500, float: 'right' }}>Sign In</Button>
+                  </div>
+                </Link>
+                <Link to="/auth?mode=signup" style={{ textDecoration: 'none', alignSelf: 'flex-end', width: '100%' }} onClick={() => setMenuOpen(false)}>
+                  <div style={{ borderBottom: '1px solid #edf2f7', width: '100%', textAlign: 'right', padding: '12px 0' }}>
+                    <Button variant="primary" size="md" style={{ width: '120px', fontWeight: 500, float: 'right' }}>Sign Up</Button>
+                  </div>
+                </Link>
+                <div className="d-flex gap-3 mt-4 mb-2" style={{ alignSelf: 'flex-end' }}>
+                  <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-light)' }}><Facebook size={22} /></a>
+                  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-light)' }}><Twitter size={22} /></a>
+                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--text-light)' }}><Instagram size={22} /></a>
+                </div>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </nav>
 
-      <section className="hero-section d-flex align-items-center justify-content-center min-vh-100">
-        <div className="container">
+      <section className="hero-section d-flex align-items-center justify-content-center min-vh-100" style={{ width: '100vw', maxWidth: '100vw', overflowX: 'hidden' }}>
+        <div className="container-fluid" style={{ width: '100vw', maxWidth: '100vw', padding: '0 32px' }}>
           <div className="row align-items-center g-5">
             <div className="col-lg-6 text-center text-lg-start">
               <span className="badge bg-primary-subtle text-primary px-3 py-2 mb-3">
                 Beta Access Now Live
               </span>
-
               <h1 className="display-5 fw-bold mt-3">
                 Revolutionize Your <span className="text-primary">Skin Health</span> with AI
               </h1>
-
               <p className="lead text-muted mt-3">
                 Experience the future of dermatology. SkinIQ uses advanced computer vision
                 to analyze and optimize your skincare routine with scientific precision.
               </p>
-
               <div className="d-flex flex-wrap justify-content-center justify-content-lg-start gap-3 mt-4">
                 <Button variant="primary" size="lg">Start Free Analysis</Button>
                 <Button variant="outline" size="lg">How It Works</Button>
               </div>
             </div>
-
             <div className="col-lg-6 text-center">
               <img
                 src="https://www.skincenterofsouthmiami.com/wp-content/uploads/2018/06/Skin-Center-of-South-Miami-Facials-and-Skin-Care.jpg"
@@ -148,14 +143,13 @@ const Welcome = () => {
         </div>
       </section>
 
-      <section className="container py-5" id="features">
+      <section className="container-fluid py-5" id="features" style={{ width: '100vw', maxWidth: '100vw', padding: '0 32px' }}>
         <div className="text-center mb-5">
           <h2 className="fw-bold">Clinical Features</h2>
           <p className="text-muted">
             Cutting-edge technology designed for your skin's well-being.
           </p>
         </div>
-
         <div className="row g-4 justify-content-center">
           {features.map((feature, idx) => (
             <div className="col-sm-6 col-lg-4" key={idx}>
