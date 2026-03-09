@@ -53,7 +53,7 @@ The AI models are implemented using **Python and TensorFlow** and integrated wit
 
 * Python
 * TensorFlow / Keras
-* OpenCV
+* Gemini API
 * Flask (API integration)
 
 ### Other Tools
