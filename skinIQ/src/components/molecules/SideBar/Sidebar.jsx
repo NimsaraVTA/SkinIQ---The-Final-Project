@@ -70,7 +70,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           src={
             profileImage
               ? profileImage
-              : "https://img.freepik.com/premium-vector/account-avatar-profile-icon-simple-editable-vector-graphics_922357-21587.jpg"
+              : "https://img.freepik.com/premium-photo/rendered-photo-beautiful-model-applying-skin-care-products-flat-illustration_1096167-104394.jpg?w=360"
           }
           alt="User"
           className="profile-img"
